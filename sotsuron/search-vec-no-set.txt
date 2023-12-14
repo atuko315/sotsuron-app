@@ -1,3 +1,0 @@
-[12-02 16:47:58 MainThread @logger.py:242] Argv: search-vec.py
-[12-02 16:48:00 MainThread @__init__.py:44] PARL detects two backend frameworks: paddle, torch. Use paddle by default.
-[12-02 16:48:00 MainThread @__init__.py:45] To use torch as backend, `export PARL_BACKEND=torch` before running the scripts.

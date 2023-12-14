@@ -1,7 +1,0 @@
-nalist: 1, step: 2, baseline: 6, promising: 4 15 20
-result: 16 0.5141876854599406 0.5453913204747775 10784
-analist: 1, step: 2, baseline: 6, promising: 4, start: 15, end: 22
-result: 16 0.5379751332149201 0.5630905861456483 14075
-推奨　正規化版
-analist: 1, step: 2, baseline: 6, promising: 4, start: 10, end: 22
-result: 16 0.4493438541710621 0.4898624414532259 0.1624541119878476 0.2304738596565256 23699

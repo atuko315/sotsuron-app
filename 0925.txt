@@ -1,7 +1,0 @@
-[09-26 15:37:53 MainThread @logger.py:242] Argv: 0925.py
-[09-26 15:37:55 MainThread @__init__.py:44] PARL detects two backend frameworks: paddle, torch. Use paddle by default.
-[09-26 15:37:55 MainThread @__init__.py:45] To use torch as backend, `export PARL_BACKEND=torch` before running the scripts.
-1, 46, 30, 5
-2, 57, 9, 2
-3, 97, 188, 132
-4, 84, 66, 177

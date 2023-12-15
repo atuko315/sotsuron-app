@@ -1,0 +1,7 @@
+Flask==3.0.0
+numpy==1.26.1
+mpmath==1.3.0
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==2.0.1+cpu
+cloudpickle==1.6.0
+pickleshare==0.7.5

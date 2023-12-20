@@ -87,7 +87,18 @@ def update_board():
     if result == 0 and  getStep(next_board) < 42:
         top = np.where(board[:, action] != 0)[0][0]
         text[top][action] = 0
-
+    else:
+        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
+        s_value = get_past_value(board, getStep(board), analist=1)
+        b_value = get_past_value(board, getStep(board), analist=-1)
+        memory[-1][3] = s_value
+        print(memory[getStep(board)][3])
+        memory[-1][4] = b_value
+        simp = getMyImportance(board, getStep(board), analist=1)
+        
+        wimp = getMyImportance(board, getStep(board), analist=-1)
+        memory[-1][7] = simp
+        memory[-1][8] = wimp
     # ボードを更新
     # 例: board = updated_board
     # 更新されたボードをクライアントに返す
@@ -165,6 +176,19 @@ def turn_of_AI():
     if result == 0 and  getStep(next_board) < 42:
         top = np.where(board[:, action] != 0)[0][0]
         text[top][action] = 0
+    else:
+        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
+        s_value = get_past_value(board, getStep(board), analist=1)
+        b_value = get_past_value(board, getStep(board), analist=-1)
+        memory[-1][3] = s_value
+        print(memory[getStep(board)][3])
+        memory[-1][4] = b_value
+        simp = getMyImportance(board, getStep(board), analist=1)
+        
+        wimp = getMyImportance(board, getStep(board), analist=-1)
+        memory[-1][7] = simp
+        memory[-1][8] = wimp
+    # ボードを更新
     response_data = {
         'updatedBoard': board.tolist(),
         'gameResult': result,
@@ -209,8 +233,11 @@ def reset():
 def start_feedack(analist=1):
     data = request.get_json()
     analist = data['analist']
-    importances = [x[7] for x in memory] if analist==1 else [x[8] for x in memory]
+    turns = data['turns']
+    human = 0 if turns[0] == 0 else 1
+    importances = [memory[i][7] if i%2 == human else 0 for i in range(len(memory))] if analist==1 else [memory[i][8] if i%2 == human else 0 for i in range(len(memory))]
     print(importances)
+    
     most_important = np.argsort(np.array(importances))[-1]
     fboard = memory[most_important][0]
     count = getPastCount(getStep(fboard), fboard, analist)
@@ -415,6 +442,7 @@ def get_valids():
         'my_importance': my_importance,
         'importance': importance,
         'ranks': ranks,
+        'counts':counts,
 
     }
     return jsonify(response_data)

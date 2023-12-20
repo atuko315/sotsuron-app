@@ -37,13 +37,13 @@
         var traj_number = 0;
         var traj_size = 0;
         var trajs = [];
-        var analist = -1;
-        var name = 11; // 被験者idを入れてください
+        var analist = 1;
+        var name = 0; // 被験者idを入れてください
         var day = 1; // 練習何日目か
-        var turns = [0, 0, -1]; //1が強いAI、−１が弱いAI,[先番, 0, 後ろ番]の順
-        var method = [1, 1]; // 1が奇数[1, 1]　2が偶数[2, 1]
+        var turns = [1, 0, 0]; //1が強いAI、−１が弱いAI,[先番, 0, 後ろ番]の順
+        var method = [2, 1]; // 1が奇数[1, 1]　2が偶数[2, 1]
 
-        var limit = 3;
+        var limit = 7;
         // limits = [3, 5, 7, 100]
         var times = [];
         var choices = [];
@@ -54,7 +54,8 @@
         var cend = 0;
         var flag = false;
         var cflag = false;
-        var win = 1
+        var win = 1;
+        var message = "";
         
         var ctext = null;
         var cfatal = null;
@@ -124,6 +125,11 @@
                 }else{
                     analist = -1
                 }
+            }
+            if (name%2==0){
+                method[0] = 2
+            }else{
+                method[0] = 1
             }
         }
         function setBoardToOnes() {
@@ -564,6 +570,7 @@
                 // 例: 更新されたボードを表示
                 valids = data.valids; // サーバーからのデータでboard変数を更新
                 ranks = data.ranks;
+                count = data.counts;
                 endTrajs();
                 createButton("close traj mode", EndTrajMode)
                 times.push(-2)
@@ -597,9 +604,9 @@
                             cstart = cend;
                             
                             if(method[0]==1){
-                                MyHotTraj(Number(innerText)-1);
+                                MyHotTraj(Number(innerText)-1, count);
                             }else{
-                                HotTraj(Number(innerText)-1);
+                                HotTraj(Number(innerText)-1, count);
                             }
                             //MyHotTraj(Number(innerText));
                             //HotTraj(Number(innerText));
@@ -614,7 +621,7 @@
                 });
             
         }
-        function HotTraj(action){
+        function HotTraj(action, count){
             fetch('/hot_traj', {
                 method: 'POST',
                 headers: {
@@ -637,14 +644,17 @@
                 }else{
                     turn = -1
                 }
-                showMessage(String(turn*curPlayer*data.value))
+
+                tmessage = "counts: "+ String(count) + " value: " +  String(turn*curPlayer*data.value)
+                showMessage(tmessage);
+                
 
                 renderTraj(fboard, text, fatal, tail, cell_class, win);
                 
                 
             });
         }
-        function MyHotTraj(action){
+        function MyHotTraj(action, count){
             fetch('/my_hot_traj', {
                 method: 'POST',
                 headers: {
@@ -670,7 +680,9 @@
                 }else{
                     turn = -1
                 }
-                showMessage(String(turn*curPlayer*data.value))
+
+                tmessage = "counts: "+ String(count) + " value: " +  String(turn*curPlayer*data.value)
+                showMessage(tmessage);
                 renderTraj(fboard, text, fatal, tail, cell_class, win);
                 
                 multiTraj();
@@ -752,7 +764,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({'analist':analist}) // board変数をJSONに変換して送信
+                body: JSON.stringify({'analist':analist, 'turns': turns}) // board変数をJSONに変換して送信
             })
             .then(response => response.json())
             .then(data => {
@@ -784,8 +796,8 @@
                     turn = -1
                 }
                 curPlayer = getStep(board)
-                
-                showMessage("counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value));
+                message = "counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value)
+                showMessage(message);
                 times.push(-2)
                 
             });
@@ -795,8 +807,8 @@
         function EndFeedback(){
             endTrajs();
             EndTrajMode();
-            removeButton("forward");
-            removeButton("back");
+            removeButton(">>");
+            removeButton("<<");
             removeButton("normal")
             removeButton("traj");
             removeButton("vec");
@@ -875,8 +887,8 @@
                     turn = -1
                 }
                 curPlayer = getStep(board)
-                
-                showMessage("counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value));
+                message = "counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value)
+                showMessage(message);
             });
 
         }
@@ -903,13 +915,15 @@
                     turn = -1
                 }
                 curPlayer = getStep(board)
-                showMessage("counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value));
+                message = "counts: "+ String(counts) + " value: " +  String(turn*curPlayer*data.value)
+                showMessage(message);
             });
             
         }
         function bactToNormal(){
             EndTrajMode()
             renderBoard(board, cell_class);
+            showMessage(message);
         }
         function getStep(fboard){
             step = 0

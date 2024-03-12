@@ -110,12 +110,12 @@
 
 .button {
     width: 80px;
-    height: 50px;
+    height: 60px;
 }
 
 .button-sub {
-    width: 60px;
-    height: 30px;
+    width: 70px;
+    height: 50px;
 }
 
 .button-container {
@@ -123,7 +123,7 @@
     flex-direction: row; /* 縦に並べる */
     align-items: center; /* 中央寄せ */
     gap: 10px; /* ボタン間の間隔を適切な値に調整してください */
-    width: 400px; /* ボードの幅（調整してください） */
+    width: 2000px; /* ボードの幅（調整してください） */
     height: 100px; /* ボードの高さ（調整してください） */
     bottom: 0; /* 画面下部に配置 */
     left: 0;

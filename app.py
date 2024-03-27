@@ -57,17 +57,13 @@ def update_board():
     global memory
     data = request.get_json()
     action = data['action']
-    memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
-    s_value = get_past_value(board, getStep(board), analist=1)
-    b_value = get_past_value(board, getStep(board), analist=-1)
-    memory[-1][3] = s_value
-    print(memory[getStep(board)][3])
-    memory[-1][4] = b_value
-    simp = getMyImportance(board, getStep(board), analist=1)
+    s_value = get_current_value(board, analist=1)
+    b_value = get_current_value(board, analist=-1)
     
-    wimp = getMyImportance(board, getStep(board), analist=-1)
-    memory[-1][7] = simp
-    memory[-1][8] = wimp
+    simp = getMyImportance(board, None, analist=1, current=True)
+    wimp = getMyImportance(board, None, analist=-1, current=True)
+    
+    memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), s_value, b_value, system.s_mcts.V.copy(), system.b_mcts.V.copy(), simp, wimp])
    
     next_board, next_player = game.getNextState(board, getCurrentPlayer(board), action) 
     result = game.getGameEnded(board, next_player)
@@ -79,7 +75,7 @@ def update_board():
         result = game.getGameEnded(next_board, next_player)
         next_board = game.getInitBoard()
         
-    board = np.array(next_board, dtype=np.int32) # クライアントからのデータを受け取り
+    board = np.array(next_board, dtype=np.int32) 
     print(board)
     
     print(fatal)
@@ -88,17 +84,14 @@ def update_board():
         top = np.where(board[:, action] != 0)[0][0]
         text[top][action] = 0
     else:
-        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
-        s_value = get_past_value(board, getStep(board), analist=1)
-        b_value = get_past_value(board, getStep(board), analist=-1)
-        memory[-1][3] = s_value
-        print(memory[getStep(board)][3])
-        memory[-1][4] = b_value
-        simp = getMyImportance(board, getStep(board), analist=1)
+        s_value = get_current_value(board, analist=1)
+        b_value = get_current_value(board, analist=-1)
+
+        simp = getMyImportance(board, None, analist=1, current=True)
+        wimp = getMyImportance(board, None, analist=-1, current=True)
+
+        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), s_value, b_value, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
         
-        wimp = getMyImportance(board, getStep(board), analist=-1)
-        memory[-1][7] = simp
-        memory[-1][8] = wimp
     # ボードを更新
     # 例: board = updated_board
     # 更新されたボードをクライアントに返す
@@ -146,15 +139,12 @@ def turn_of_AI():
     #saction = np.argmax(system.s_mcts.getActionProb(canonicalboard, temp=0))
     #waction = np.argmax(system.b_mcts.getActionProb(canonicalboard, temp=0))
     #action = saction if analist == 1 else waction
-    memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
-    s_value = get_past_value(board, getStep(board), analist=1)
-    b_value = get_past_value(board, getStep(board), analist=-1)
-    memory[-1][3] = s_value
-    memory[-1][4] = b_value
-    simp = getMyImportance(board, getStep(board), analist=1)
-    wimp = getMyImportance(board, getStep(board), analist=-1)
-    memory[-1][7] = simp
-    memory[-1][8] = wimp
+    s_value = get_current_value(board, analist=1)
+    b_value = get_current_value(board, analist=-1)
+
+    simp = getMyImportance(board, None, analist=1, current=True)
+    wimp = getMyImportance(board, None, analist=-1, current=True)
+    memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), s_value, b_value, system.s_mcts.V.copy(), system.b_mcts.V.copy(), simp, wimp])
    
     next_board, next_player = game.getNextState(board, getCurrentPlayer(board), action) 
     result = game.getGameEnded(board, next_player)
@@ -177,17 +167,13 @@ def turn_of_AI():
         top = np.where(board[:, action] != 0)[0][0]
         text[top][action] = 0
     else:
-        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), None, None, system.s_mcts.V.copy(), system.b_mcts.V.copy(), None, None])
-        s_value = get_past_value(board, getStep(board), analist=1)
-        b_value = get_past_value(board, getStep(board), analist=-1)
-        memory[-1][3] = s_value
-        print(memory[getStep(board)][3])
-        memory[-1][4] = b_value
-        simp = getMyImportance(board, getStep(board), analist=1)
-        
-        wimp = getMyImportance(board, getStep(board), analist=-1)
-        memory[-1][7] = simp
-        memory[-1][8] = wimp
+        s_value = get_current_value(board, analist=1)
+        b_value = get_current_value(board, analist=-1)
+
+        simp = getMyImportance(board, None, analist=1, current=True)
+        wimp = getMyImportance(board, None, analist=-1, current=True)
+        memory.append([board.copy(), system.s_mcts.Nsa.copy(), system.b_mcts.Nsa.copy(), s_value, b_value, system.s_mcts.V.copy(), system.b_mcts.V.copy(), simp, wimp])
+       
     # ボードを更新
     response_data = {
         'updatedBoard': board.tolist(),
@@ -332,9 +318,10 @@ def saliency_map(analist=1, mode="policy"):
 def fatal_map(analist=1):
         global answer
         data = request.get_json()
-        agent = system.s_mcts
-        fboard = np.array(data['board'], dtype=np.int32)
         analist = data['analist']
+        agent = system.s_mcts if analist == 1 else system.b_mcts
+        fboard = np.array(data['board'], dtype=np.int32)
+        
         key = getStep(fboard) * analist
         if not answer[key]:
             answer[key] = hot_states_one_way(fboard, analist, step=4, baseline=2, fix=-1)
@@ -470,7 +457,7 @@ def getImportance(board, step, analist, baseline=1):
     else:
         return abs(next_values[0] - next_values[baseline])
 
-def getMyImportance(board, step, analist):
+def getMyImportance(board, step, analist, current=False):
         #　一番上から第3四分位数までの分散
         player = getCurrentPlayer(board)
         valids = game.getValidMoves(board, player)
@@ -480,7 +467,11 @@ def getMyImportance(board, step, analist):
             if not valids[a]:
                 continue
             next_board, _ = game.getNextState(board.copy(), player, a)
-            next_value = - get_past_value(next_board, step, analist)
+            if current:
+                next_value = - get_current_value(next_board, analist)
+            else:
+                next_value = - get_past_value(next_board, step, analist)
+            
             
             #print(type(next_board))
             next_values.append(next_value)
@@ -500,10 +491,7 @@ def getPastValue(board, analist):
     s = game.stringRepresentation(canonicalBoard)
     if analist == 1:
         if s in sVs.keys():
-            #print(self.getPastCount(path, step, board, 1))
-            #print(s)
-            #print(sVs[s])
-            #print("in")
+        
             if type(sVs[s]) == int:
                 return float(sVs[s]) 
             elif type(sVs[s]) == np.ndarray:
@@ -526,8 +514,6 @@ def getPastValue(board, analist):
             cp, cv = system.b_mcts.nn_agent.predict(canonicalBoard)
             return cv.astype(np.float32).tolist()[0]
 
-
-
 @app.route('/hot_traj', methods=['POST'])
 def hot_traj(analist = 1):
     
@@ -547,7 +533,6 @@ def hot_traj(analist = 1):
     result = getCurrentPlayer(rboard) * game.getGameEnded(rboard, getCurrentPlayer(rboard))
     traj.extend(atraj)
     tboard = vboard.copy()
-    
     
     limit = min(limit, len(traj))
     if traj:
@@ -636,7 +621,7 @@ def my_hot_traj(analist = 1, mode="group", tail=3):
             
     fatal = system.detectFatalStone(vboard)
     result = getCurrentPlayer(vboard) * game.getGameEnded(vboard, getCurrentPlayer(vboard))
-    #new_trajs = np.array(new_trajs, dtype=np.int32).tolist()
+   
     new_trajs = get_unique_list(new_trajs)
     
     
@@ -685,8 +670,7 @@ def my_hot_traj_sub(fboard, bstep, analist=1, step=2, baseline=4, mode="group", 
                     traj.extend(g)
     
     most_hot_trajs = groups[str(gd2[0])] if gd2 else [[-1]]
-    #print(most_hot_trajs)
-    #print(traj, most_hot_trajs)
+    
     return traj, most_hot_trajs
 
 
@@ -757,7 +741,6 @@ def check_convergence(boards, reach, bstep,  analist, btraj=None, value=None):
             trajs.append(traj)
         if group:
             for g in group:
-                
                 gd[str(g)] += 1
                 if  traj:
                     groups[str(g)].append(traj)
@@ -769,8 +752,6 @@ def check_convergence(boards, reach, bstep,  analist, btraj=None, value=None):
     visual = [0 if i not in collections.Counter(gs).keys() else collections.Counter(gs)[i]
                     for i in range(42)]
     visual = np.array(visual).reshape(6, 7)
-    
-    #print(visual)
     
     gs_sorted = sorted(dict(gs).items(), reverse=True, key=lambda x : x[1])
     
@@ -803,6 +784,12 @@ def check_convergence(boards, reach, bstep,  analist, btraj=None, value=None):
     
     print( bfcount, bfdcount, trajs, gs4, gd2, groups, visual)
     return bfcount, bfdcount, trajs, gs4, gd2, groups, visual
+
+def cal_bfcount():
+    pass
+
+def cal_bfdcount():
+    pass
 
 def check_convergence_per_board(board, reach, bstep, analist, value=None):
         bcount = 0
@@ -862,9 +849,7 @@ def check_convergence_per_board(board, reach, bstep, analist, value=None):
 
 def collect_promising_vector(fboard, key_c, analist, step, baseline, fix = -1, mode="normal"):
         trajs, boards = collect_promising_vector_sub(fboard, key_c, analist, step, baseline, fix = getStep(fboard), mode=mode)
-        return trajs
-
-    
+        return trajs  
 
 def collect_promising_vector_sub(boards, key_c, analist, step=2, baseline=4, fix=-1, mode="normal"):
         new_trajs = []
@@ -1031,21 +1016,23 @@ def hot_vector_one_way(fboard,  analist=1, step=2, baseline=4, fix=-1):
     return vector, distance, metric
 
 def detectHotState(board, analist, step, neuro=True):
+        '''
+        いきつく探索木の端の結果を返す
+        edgeは０,勝ち負けもconfig行きにした方がいい？
+        '''
         zboard, sNsa, bNsa, sv, bv, sVs, bVs, simp, wimp = memory[step]
         zflag = True if analist == 0 else False
-
-        
         traj = []
-
+        vstep = getStep(board) # countは差分で得られる
         curPlayer = getCurrentPlayer(board)
+        vplayer = curPlayer
         
         vboard = board.copy()
-        vcanonicalBoard = game.getCanonicalForm(vboard, curPlayer)
-        vs = game.stringRepresentation(vcanonicalBoard)
+        vs = getStringRepresentation(vboard)
         
-        vstep = getStep(board) # countは差分で得られる
         if zflag:
             analist = getCurrentPlayer(board)
+
         counts = getPastCount(step, vboard, analist)
         if sum(counts) == 0:
                 if not neuro:
@@ -1053,16 +1040,14 @@ def detectHotState(board, analist, step, neuro=True):
                     result = (vboard, 0, traj)
                     return result
                 
-
-                
         #print(self.getPastValueNoModification( path, step, vboard, 1))
         if game.getGameEnded(board, curPlayer):
             #judge
             result = (board, -1, traj)
             return result
         
-        
-        if analist == 1:
+        #要らんくね？
+        '''if analist == 1:
             if not neuro:
                 if vs not in sVs.keys():
                     result = (None, None, None)
@@ -1071,23 +1056,15 @@ def detectHotState(board, analist, step, neuro=True):
             if not neuro:
                 if vs not in bVs.keys():
                     result = (None, None, None)
-                    return result
-       
-        
-        vplayer = curPlayer
+                    return result'''
     
         while True:
             if zflag:
                 analist = vplayer
-
-            #print(vboard)
-            #print(vvalue)
-            #print("--------")
            
             valids = game.getValidMoves(vboard, vplayer)
             counts = getPastCount(step, vboard, analist)
-
-           
+            agent = system.s_mcts.nn_agent if analist == 1 else system.b_mcts.nn_agent
 
             if sum(counts) == 0:
                 if not neuro:
@@ -1096,13 +1073,11 @@ def detectHotState(board, analist, step, neuro=True):
                     return result
                 
                 canonicalBoard = game.getCanonicalForm(vboard, getCurrentPlayer(vboard))
-                if analist == 1:
-                    p, v = system.s_mcts.nn_agent.predict(canonicalBoard)
-                else:
-                    p, v = system.b_mcts.nn_agent.predict(canonicalBoard)
+                p, v = agent.predict(canonicalBoard)
                 p = np.argsort(p)
                 a = 1
                 action = p[-a]
+                # maskによってこの処理、消えるよ
                 while valids[action] == 0:
                     print("loop")
                     a -= 1
@@ -1113,6 +1088,7 @@ def detectHotState(board, analist, step, neuro=True):
             else:
                 action = np.argmax(counts)
             
+            #イランきがするが念のため
             if valids[action] == 0:
                 print("not valid")
                 result = (vboard, None, traj)
@@ -1124,7 +1100,7 @@ def detectHotState(board, analist, step, neuro=True):
                 
             
             
-                
+            #この処理を前に移動させればええんでは？    
             vnextBoard, vplayer = game.getNextState(vboard, vplayer, action)
             vcanonicalBoard = game.getCanonicalForm(vboard, -vplayer)
             vs = game.stringRepresentation( vcanonicalBoard)
@@ -1150,8 +1126,6 @@ def detectHotState(board, analist, step, neuro=True):
                 result = (vnextBoard, -1, traj)
                 return result
             
-            
-            
             vboard = vnextBoard
             print(vboard)
 
@@ -1167,38 +1141,48 @@ def detect_relative_distance(pa, ca, limit=3):
         
         return (l, min(abs(pa-ca), limit))
 
-def get_past_value(fboard, step, analist=1):
-    zboard, sNsa, bNsa, sv, bv, sVs, bVs, simp, wimp = memory[step]
+def getStringRepresentation(fboard):
     canonicalboard = game.getCanonicalForm(fboard, getCurrentPlayer(fboard))
     s = game.stringRepresentation(canonicalboard)
-    if analist == 1:
-            if s in sVs.keys():
-                #print(self.getPastCount(path, step, board, 1))
-                #print(s)
-                #print(sVs[s])
-                #print("in")
-                if type(sVs[s]) == int:
-                    return float(sVs[s]) 
-                elif type(sVs[s]) == np.ndarray:
-                    return sVs[s].astype(np.float32).tolist()[0]
-                
-                return sVs[s]
-            else:
-                cp, cv = system.s_mcts.nn_agent.predict(canonicalboard)
-                return cv.astype(np.float32).tolist()[0]
-    else:
-        if s in bVs.keys():
-            
-            if type(bVs[s]) == int:
-                return float(bVs[s]) 
-            elif type(bVs[s]) == np.ndarray:
-                return bVs[s].astype(np.float32).tolist()[0]
-            
-            return bVs[s]
-        else:
-            cp, cv = system.b_mcts.nn_agent.predict(canonicalboard)
-            return cv.astype(np.float32).tolist()[0]
+    return s
+
+def get_current_value(fboard, analist=1):
+    s = getStringRepresentation(fboard)
+    Vs = system.s_mcts.V if analist == 1 else system.b_mcts.V
+    agent = system.s_mcts.nn_agent if analist == 1 else system.b_mcts.nn_agent
+    
+    if s in Vs.keys():
+        if type(Vs[s]) == int:
+                return float(Vs[s]) 
+        elif type(Vs[s]) == np.ndarray:
+            return Vs[s].astype(np.float32).tolist()[0]
         
+        return Vs[s]
+    else:
+        canonicalboard = game.getCanonicalForm(fboard, getCurrentPlayer(fboard))
+        cp, cv = agent.predict(canonicalboard)
+        return cv.astype(np.float32).tolist()[0]
+            
+
+
+def get_past_value(fboard, step, analist=1):
+    zboard, sNsa, bNsa, sv, bv, sVs, bVs, simp, wimp = memory[step]
+    s = getStringRepresentation(fboard)
+    Vs = sVs if analist == 1 else bVs
+    agent = system.s_mcts.nn_agent if analist == 1 else system.b_mcts.nn_agent
+    
+    if s in Vs.keys():
+        if type(Vs[s]) == int:
+            return float(Vs[s]) 
+        elif type(Vs[s]) == np.ndarray:
+            return Vs[s].astype(np.float32).tolist()[0]
+        
+        return Vs[s]
+    else:
+        canonicalboard = game.getCanonicalForm(fboard, getCurrentPlayer(fboard))
+        cp, cv = agent.predict(canonicalboard)
+        return cv.astype(np.float32).tolist()[0]
+    
 def get_unique_list(seq):
     seen = []
     return [x for x in seq if x not in seen and not seen.append(x)]
